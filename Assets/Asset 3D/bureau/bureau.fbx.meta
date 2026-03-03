@@ -3,7 +3,22 @@ guid: f42505971d32ebb46912619e07a24aba
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: bureua
+    second: {fileID: 2100000, guid: 763d54246a583834982e7f109ddc8382, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: planche_bureau
+    second: {fileID: 2100000, guid: 29fcfaf192796a64db83a61cec643b34, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: poignet
+    second: {fileID: 2100000, guid: e697178458e9fda4fb76f31eeac63efa, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

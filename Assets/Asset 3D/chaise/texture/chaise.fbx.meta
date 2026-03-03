@@ -3,7 +3,32 @@ guid: 60f09ed15121a1246a5bd6d888f9a6fd
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: assise_chaise
+    second: {fileID: 2100000, guid: 502978639108b0b44a7994ffc910fe11, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: attahce_chaise
+    second: {fileID: 2100000, guid: 043b318be48f61f4ea6d9ebae2305e98, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: coque
+    second: {fileID: 2100000, guid: 58a663a7a46ab6046b4a44e41fec76dd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pied_chaise
+    second: {fileID: 2100000, guid: 6968de8df08e4e740ac732295c751afe, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: roue
+    second: {fileID: 2100000, guid: e7d3361fc591cf745ab8404168d898bf, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
