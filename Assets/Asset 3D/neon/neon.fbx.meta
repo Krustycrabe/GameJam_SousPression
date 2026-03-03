@@ -3,7 +3,27 @@ guid: e6a29036266e616498aace40fa8de85c
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: alluminium
+    second: {fileID: 2100000, guid: ddc444c5dc3bcca4399414e420a3fe98, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: cable
+    second: {fileID: 2100000, guid: 1d3a59dbe2ab37f4d898657ee2a51070, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: metal
+    second: {fileID: 2100000, guid: ce571365d8882094380e2feb1966fd12, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: neon
+    second: {fileID: 2100000, guid: 8a1104b13b963f94589341d012c9fcc5, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

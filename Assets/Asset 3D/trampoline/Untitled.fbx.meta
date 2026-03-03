@@ -3,7 +3,27 @@ guid: 1a27ae3e1ca71044ebc2446ffca939f9
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PIED
+    second: {fileID: 2100000, guid: 7271fce5265646042b07815ec2900a44, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TOILE
+    second: {fileID: 2100000, guid: 45d28431f616f3b4289385840c13d5ab, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TRAMPOLINE
+    second: {fileID: 2100000, guid: 6d3c6f6af7b37234484e1faee408a73b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ressort
+    second: {fileID: 2100000, guid: f9ac3d9d578923a4887b57675bbc88a6, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

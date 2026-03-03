@@ -3,7 +3,17 @@ guid: 918b21cdd7143044e904db1533066d7c
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: bouton_pc
+    second: {fileID: 2100000, guid: b481040aae3daa440b352300e8553458, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pc
+    second: {fileID: 2100000, guid: 9427120e8dd5c4e4097ca61bd3d22107, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

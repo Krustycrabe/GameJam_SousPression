@@ -3,7 +3,22 @@ guid: 9dfb9385f40b8464eb08c95e5302a0bc
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ecrant
+    second: {fileID: 2100000, guid: 2cb2b56af014e1944afeaa426a0a7a46, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pied_ordinateur
+    second: {fileID: 2100000, guid: ef52b66305401d94f93c71721d79e6f9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: vitre_ecrant
+    second: {fileID: 2100000, guid: f6108aa8dc48f3a45bb50c4dfb096e35, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

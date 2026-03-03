@@ -3,7 +3,12 @@ guid: af036b9f4a52cb3418b4c0440afafece
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: souris
+    second: {fileID: 2100000, guid: be7f7e140c81b434b91515f68608345b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

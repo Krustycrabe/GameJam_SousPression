@@ -3,7 +3,32 @@ guid: b042e571dc10e3349b04de0dfb504e6f
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: bouton
+    second: {fileID: 2100000, guid: 2766092914f5c9a4dbf09092d55b6019, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: carellage
+    second: {fileID: 2100000, guid: 7686b554f39cfb54aa34d6bbba6ebad4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: light
+    second: {fileID: 2100000, guid: f077d387ce98f624cb6f347ac5bd260e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: metal
+    second: {fileID: 2100000, guid: f6b0ddb3a1fad5c49aab86fcafea7bcc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: mur
+    second: {fileID: 2100000, guid: 4811b5eee1933394baadd9f716f6ba97, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
