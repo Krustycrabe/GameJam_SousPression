@@ -27,6 +27,7 @@ public class PlayerClimbController : MonoBehaviour
     private bool _isGrounded;
     private bool _isClimbing;
     private bool _climbAnimationEnded;
+    private bool _isHoldingBriefcase;
 
     private void Awake()
     {
@@ -39,6 +40,8 @@ public class PlayerClimbController : MonoBehaviour
         PlayerEvents.OnJumpInput += HandleJumpInput;
         PlayerEvents.OnGroundedChanged += HandleGroundedChanged;
         PlayerEvents.OnClimbAnimationEnd += HandleClimbAnimationEnd;
+        PlayerEvents.OnBriefcasePickedUp += HandleBriefcasePickedUp; // ← nouveau
+        PlayerEvents.OnBriefcaseDropped += HandleBriefcaseDropped;  // ← nouveau
     }
 
     private void OnDisable()
@@ -46,6 +49,8 @@ public class PlayerClimbController : MonoBehaviour
         PlayerEvents.OnJumpInput -= HandleJumpInput;
         PlayerEvents.OnGroundedChanged -= HandleGroundedChanged;
         PlayerEvents.OnClimbAnimationEnd -= HandleClimbAnimationEnd;
+        PlayerEvents.OnBriefcasePickedUp -= HandleBriefcasePickedUp; // ← nouveau
+        PlayerEvents.OnBriefcaseDropped -= HandleBriefcaseDropped;  // ← nouveau
     }
 
     private void HandleGroundedChanged(bool isGrounded) => _isGrounded = isGrounded;
@@ -60,9 +65,12 @@ public class PlayerClimbController : MonoBehaviour
         _climbAnimationEnded = true;
     }
 
+    private void HandleBriefcasePickedUp(Transform _) => _isHoldingBriefcase = true;
+    private void HandleBriefcaseDropped() => _isHoldingBriefcase = false;
+
     private void HandleJumpInput()
     {
-        if (_isGrounded || _isClimbing) return;
+        if (_isGrounded || _isClimbing || _isHoldingBriefcase) return; // ← ajout
 
         if (TryDetectLedge(out Vector3 hangPosition, out Quaternion hangRotation))
             StartCoroutine(ClimbSequence(hangPosition, hangRotation));
