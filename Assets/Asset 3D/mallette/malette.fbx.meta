@@ -3,7 +3,17 @@ guid: 8f711b3e8227f49408898a92223c309c
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: cuir
+    second: {fileID: 2100000, guid: 9f6f19ea53647244aa7ad6881692a5de, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: laiton
+    second: {fileID: 2100000, guid: 2f0e9f0c38338784290d0c0d0d81ea1c, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
