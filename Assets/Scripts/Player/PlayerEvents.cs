@@ -6,6 +6,9 @@ public static class PlayerEvents
     public static event Action<Vector2> OnMoveInput;
     public static event Action<Vector2> OnLookInput;
     public static event Action OnJumpInput;
+    public static event Action OnPickupInput;
+    public static event Action<bool> OnAimInput;
+    public static event Action<bool> OnThrowChargeInput;
 
     public static event Action<Transform> OnPlayerTransformReady;
     public static event Action<float> OnSpeedChanged;
@@ -15,22 +18,34 @@ public static class PlayerEvents
     public static event Action<float> OnJumpForceRequested;
     public static event Action OnJumpExecuted;
 
-    public static event Action OnClimbStarted;    // ← nouveau
-    public static event Action OnClimbCompleted;  // ← nouveau
-
-    public static void RaiseMoveInput(Vector2 direction) => OnMoveInput?.Invoke(direction);
-    public static void RaiseLookInput(Vector2 delta) => OnLookInput?.Invoke(delta);
-    public static void RaiseJumpInput() => OnJumpInput?.Invoke();
-    public static void RaisePlayerTransformReady(Transform t) => OnPlayerTransformReady?.Invoke(t);
-    public static void RaiseSpeedChanged(float speed) => OnSpeedChanged?.Invoke(speed);
-    public static void RaiseGroundedChanged(bool isGrounded) => OnGroundedChanged?.Invoke(isGrounded);
-    public static void RaiseFallBlendChanged(float blend) => OnFallBlendChanged?.Invoke(blend);
-    public static void RaiseJumpForceRequested(float force) => OnJumpForceRequested?.Invoke(force);
-    public static void RaiseJumpExecuted() => OnJumpExecuted?.Invoke();
-    public static void RaiseClimbStarted() => OnClimbStarted?.Invoke();   // ← nouveau
-    public static void RaiseClimbCompleted() => OnClimbCompleted?.Invoke(); // ← nouveau
-
+    public static event Action OnClimbStarted;
+    public static event Action OnClimbCompleted;
     public static event Action OnClimbAnimationEnd;
-    public static void RaiseClimbAnimationEnd() => OnClimbAnimationEnd?.Invoke();
 
+    public static event Action<Transform> OnBriefcasePickedUp;
+    public static event Action OnBriefcaseDropped;
+    public static event Action<bool> OnAimChanged;
+    public static event Action<float> OnThrowChargeChanged;
+    public static event Action<Vector3> OnThrowExecuted;
+
+    public static void RaiseMoveInput(Vector2 d) => OnMoveInput?.Invoke(d);
+    public static void RaiseLookInput(Vector2 d) => OnLookInput?.Invoke(d);
+    public static void RaiseJumpInput() => OnJumpInput?.Invoke();
+    public static void RaisePickupInput() => OnPickupInput?.Invoke();
+    public static void RaiseAimInput(bool v) => OnAimInput?.Invoke(v);
+    public static void RaiseThrowChargeInput(bool v) => OnThrowChargeInput?.Invoke(v);
+    public static void RaisePlayerTransformReady(Transform t) => OnPlayerTransformReady?.Invoke(t);
+    public static void RaiseSpeedChanged(float v) => OnSpeedChanged?.Invoke(v);
+    public static void RaiseGroundedChanged(bool v) => OnGroundedChanged?.Invoke(v);
+    public static void RaiseFallBlendChanged(float v) => OnFallBlendChanged?.Invoke(v);
+    public static void RaiseJumpForceRequested(float v) => OnJumpForceRequested?.Invoke(v);
+    public static void RaiseJumpExecuted() => OnJumpExecuted?.Invoke();
+    public static void RaiseClimbStarted() => OnClimbStarted?.Invoke();
+    public static void RaiseClimbCompleted() => OnClimbCompleted?.Invoke();
+    public static void RaiseClimbAnimationEnd() => OnClimbAnimationEnd?.Invoke();
+    public static void RaiseBriefcasePickedUp(Transform t) => OnBriefcasePickedUp?.Invoke(t);
+    public static void RaiseBriefcaseDropped() => OnBriefcaseDropped?.Invoke();
+    public static void RaiseAimChanged(bool v) => OnAimChanged?.Invoke(v);
+    public static void RaiseThrowChargeChanged(float v) => OnThrowChargeChanged?.Invoke(v);
+    public static void RaiseThrowExecuted(Vector3 v) => OnThrowExecuted?.Invoke(v);
 }

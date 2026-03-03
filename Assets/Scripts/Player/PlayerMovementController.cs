@@ -10,6 +10,8 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] private float _gravityScale = 2f;
     [SerializeField] private float _fallBlendDistance = 1f;
     [SerializeField] private LayerMask _groundMask = ~0;
+    [SerializeField] private float _aimSpeedMultiplier = 0.5f;
+    private bool _isAiming;
 
     private CharacterController _characterController;
     private Vector2 _moveInput;
@@ -27,6 +29,7 @@ public class PlayerMovementController : MonoBehaviour
         PlayerEvents.OnJumpForceRequested += HandleJumpForce;
         PlayerEvents.OnClimbStarted += HandleClimbStarted;
         PlayerEvents.OnClimbCompleted += HandleClimbCompleted;
+        PlayerEvents.OnAimChanged += HandleAimChanged;
     }
 
     private void OnDisable()
@@ -35,7 +38,10 @@ public class PlayerMovementController : MonoBehaviour
         PlayerEvents.OnJumpForceRequested -= HandleJumpForce;
         PlayerEvents.OnClimbStarted -= HandleClimbStarted;
         PlayerEvents.OnClimbCompleted -= HandleClimbCompleted;
+        PlayerEvents.OnAimChanged -= HandleAimChanged;
     }
+
+    private void HandleAimChanged(bool isAiming) => _isAiming = isAiming;
 
     private void HandleClimbStarted() => _isClimbing = true;
     private void HandleClimbCompleted()
@@ -69,15 +75,23 @@ public class PlayerMovementController : MonoBehaviour
         Transform cam = Camera.main.transform;
         Vector3 forward = Vector3.ProjectOnPlane(cam.forward, Vector3.up).normalized;
         Vector3 right = Vector3.ProjectOnPlane(cam.right, Vector3.up).normalized;
-        Vector3 horizontalMove = (forward * _moveInput.y + right * _moveInput.x) * _moveSpeed;
-        Vector3 finalMove = horizontalMove + Vector3.up * _verticalVelocity;
+        float speed = _moveSpeed * (_isAiming ? _aimSpeedMultiplier : 1f);
+        Vector3 horizontal = (forward * _moveInput.y + right * _moveInput.x) * speed;
+        Vector3 finalMove = horizontal + Vector3.up * _verticalVelocity;
 
         _characterController.Move(finalMove * Time.deltaTime);
 
-        if (horizontalMove.sqrMagnitude > 0.01f)
+        if (_isAiming)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(horizontalMove.normalized);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 15f * Time.deltaTime);
+            // Face la direction de la caméra en mode visée
+            float yaw = Camera.main.transform.eulerAngles.y;
+            Quaternion target = Quaternion.Euler(0f, yaw, 0f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, target, 15f * Time.deltaTime);
+        }
+        else if (horizontal.sqrMagnitude > 0.01f)
+        {
+            Quaternion target = Quaternion.LookRotation(horizontal.normalized);
+            transform.rotation = Quaternion.Slerp(transform.rotation, target, 15f * Time.deltaTime);
         }
     }
 

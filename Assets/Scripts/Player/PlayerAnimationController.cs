@@ -8,6 +8,8 @@ public class PlayerAnimationController : MonoBehaviour
     private static readonly int JumpHash = Animator.StringToHash("Jump");
     private static readonly int FallBlendHash = Animator.StringToHash("FallBlend");
     private static readonly int ClimbHash = Animator.StringToHash("Climb");
+    private static readonly int IsAimingHash = Animator.StringToHash("IsAiming");
+    private static readonly int ThrowHash = Animator.StringToHash("Throw");
 
     private Animator _animator;
 
@@ -20,6 +22,8 @@ public class PlayerAnimationController : MonoBehaviour
         PlayerEvents.OnFallBlendChanged += HandleFallBlendChanged;
         PlayerEvents.OnJumpExecuted += HandleJumpExecuted;
         PlayerEvents.OnClimbStarted += HandleClimbStarted;
+        PlayerEvents.OnAimChanged += HandleAimChanged;
+        PlayerEvents.OnThrowExecuted += HandleThrowExecuted;
     }
 
     private void OnDisable()
@@ -29,11 +33,22 @@ public class PlayerAnimationController : MonoBehaviour
         PlayerEvents.OnFallBlendChanged -= HandleFallBlendChanged;
         PlayerEvents.OnJumpExecuted -= HandleJumpExecuted;
         PlayerEvents.OnClimbStarted -= HandleClimbStarted;
+        PlayerEvents.OnAimChanged -= HandleAimChanged;
+        PlayerEvents.OnThrowExecuted -= HandleThrowExecuted;
     }
 
     private void HandleSpeedChanged(float speed) => _animator.SetFloat(SpeedHash, speed, 0.1f, Time.deltaTime);
     private void HandleGroundedChanged(bool isGrounded) => _animator.SetBool(IsGroundedHash, isGrounded);
     private void HandleFallBlendChanged(float blend) => _animator.SetFloat(FallBlendHash, blend, 0.15f, Time.deltaTime);
+
+    private void HandleAimChanged(bool isAiming)
+    => _animator.SetBool(IsAimingHash, isAiming);
+
+    private void HandleThrowExecuted(Vector3 _)
+    {
+        _animator.ResetTrigger(ThrowHash);
+        _animator.SetTrigger(ThrowHash);
+    }
 
     private void HandleJumpExecuted()
     {

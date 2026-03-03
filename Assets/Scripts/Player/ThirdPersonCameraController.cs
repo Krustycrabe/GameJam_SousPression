@@ -11,6 +11,14 @@ public class ThirdPersonCameraController : MonoBehaviour
     [SerializeField] private float _rotationSmoothing = 8f;   // 3 = très doux, 20 = quasi-immédiat
     [SerializeField] private Vector3 _offset = new Vector3(0f, 1.6f, 0f);
 
+    [Header("Visée")]
+    [SerializeField] private float _aimDistance = 2f;
+    [SerializeField] private float _aimTransitionSpeed = 8f;
+
+    private float _currentDistance;
+    private bool _isAiming;
+
+
     private Transform _target;
     private Vector3 _pivotPosition;
 
@@ -28,18 +36,23 @@ public class ThirdPersonCameraController : MonoBehaviour
     {
         PlayerEvents.OnPlayerTransformReady += HandlePlayerReady;
         PlayerEvents.OnLookInput += HandleLookInput;
+        PlayerEvents.OnAimChanged += HandleAimChanged;
     }
 
     private void OnDisable()
     {
         PlayerEvents.OnPlayerTransformReady -= HandlePlayerReady;
         PlayerEvents.OnLookInput -= HandleLookInput;
+        PlayerEvents.OnAimChanged -= HandleAimChanged;
     }
+
+    private void HandleAimChanged(bool isAiming) => _isAiming = isAiming;
 
     private void HandlePlayerReady(Transform playerTransform)
     {
         _target = playerTransform;
         _pivotPosition = _target.position + _offset;
+        _currentDistance = _distance;
 
         // Les angles smoothés sont initialisés sur les cibles pour éviter
         // un lerp depuis 0° au premier frame
@@ -61,6 +74,8 @@ public class ThirdPersonCameraController : MonoBehaviour
     {
         if (!_isInitialized) return;
 
+        _currentDistance = Mathf.Lerp(_currentDistance, _isAiming ? _aimDistance : _distance, _aimTransitionSpeed * Time.deltaTime);
+
         _smoothedYaw = Mathf.LerpAngle(_smoothedYaw, _targetYaw, _rotationSmoothing * Time.deltaTime);
         _smoothedPitch = Mathf.LerpAngle(_smoothedPitch, _targetPitch, _rotationSmoothing * Time.deltaTime);
 
@@ -77,5 +92,6 @@ public class ThirdPersonCameraController : MonoBehaviour
         transform.position = _pivotPosition + rotation * new Vector3(0f, 0f, -_distance);
         transform.LookAt(_pivotPosition);
     }
+
 
 }
