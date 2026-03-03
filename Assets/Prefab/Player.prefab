@@ -150,7 +150,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6276704864330656320}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0eb9528b0ea91b4d87245efaaae6612, type: 3}
   m_Name: 
@@ -173,15 +173,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -13.07
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 9.74
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.69
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -257,35 +257,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7982300464506933679}
-    - targetCorrespondingSourceObject: {fileID: 199677974501643460, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 224174288772631150}
+      addedObject: {fileID: 2113887834198422625}
   m_SourcePrefab: {fileID: 100100000, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
 --- !u!4 &1437862283523926683 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
   m_PrefabInstance: {fileID: 1476874315811868016}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1638060475461573044 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 199677974501643460, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
-  m_PrefabInstance: {fileID: 1476874315811868016}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &224174288772631150
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1638060475461573044}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7cb3e1872dc76ff4db9d48b6698c7c39, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerBriefCaseController
-  _rightHandBone: {fileID: 0}
-  _initialBriefcase: {fileID: 0}
-  _pickupRange: 2
 --- !u!1 &1783285318121713697 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
@@ -388,15 +368,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerClimbController
   _climbableTag: Climbable
-  _detectHeight: 1.4
-  _climbReach: 0.9
-  _minLedgeHeight: 0.8
-  _maxLedgeHeight: 2.3
+  _detectHeight: 1.2
+  _climbReach: 1.2
+  _minLedgeHeight: 0.5
+  _maxLedgeHeight: 2.5
   _hangOffset: 1.7
-  _wallOffset: 0.3
-  _climbDuration: 1.5
+  _wallOffset: 0.15
+  _climbDuration: 1.17
   _forwardBoostDuration: 0.5
-  _forwardBoostDistance: 0.3
+  _forwardBoostDistance: 0.5
 --- !u!114 &7935041840068457509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -426,6 +406,21 @@ MonoBehaviour:
   _arcLift: 0.4
   _chargeSpeed: 1
   _minChargeToThrow: 0.05
+--- !u!114 &2113887834198422625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1783285318121713697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cb3e1872dc76ff4db9d48b6698c7c39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerBriefCaseController
+  _rightHandBone: {fileID: 2630069147276713833}
+  _initialBriefcase: {fileID: 0}
+  _pickupRange: 2
 --- !u!4 &2630069147276713833 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -5764316522323783143, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
