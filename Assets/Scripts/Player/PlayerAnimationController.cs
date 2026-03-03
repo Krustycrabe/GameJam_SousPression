@@ -10,6 +10,9 @@ public class PlayerAnimationController : MonoBehaviour
     private static readonly int ClimbHash = Animator.StringToHash("Climb");
     private static readonly int IsAimingHash = Animator.StringToHash("IsAiming");
     private static readonly int ThrowHash = Animator.StringToHash("Throw");
+    private static readonly int SweepFallHash = Animator.StringToHash("SweepFall");
+    private static readonly int StandUpHash = Animator.StringToHash("StandUp");
+
 
     private Animator _animator;
 
@@ -24,6 +27,8 @@ public class PlayerAnimationController : MonoBehaviour
         PlayerEvents.OnClimbStarted += HandleClimbStarted;
         PlayerEvents.OnAimChanged += HandleAimChanged;
         PlayerEvents.OnThrowExecuted += HandleThrowExecuted;
+        PlayerEvents.OnSweepFallAnimStarted += HandleSweepFallAnimStarted;
+        PlayerEvents.OnStandUpAnimStarted += HandleStandUpAnimStarted;
     }
 
     private void OnDisable()
@@ -35,11 +40,25 @@ public class PlayerAnimationController : MonoBehaviour
         PlayerEvents.OnClimbStarted -= HandleClimbStarted;
         PlayerEvents.OnAimChanged -= HandleAimChanged;
         PlayerEvents.OnThrowExecuted -= HandleThrowExecuted;
+        PlayerEvents.OnSweepFallAnimStarted -= HandleSweepFallAnimStarted;
+        PlayerEvents.OnStandUpAnimStarted -= HandleStandUpAnimStarted;
     }
 
     private void HandleSpeedChanged(float speed) => _animator.SetFloat(SpeedHash, speed, 0.1f, Time.deltaTime);
     private void HandleGroundedChanged(bool isGrounded) => _animator.SetBool(IsGroundedHash, isGrounded);
     private void HandleFallBlendChanged(float blend) => _animator.SetFloat(FallBlendHash, blend, 0.15f, Time.deltaTime);
+
+    private void HandleSweepFallAnimStarted()
+    {
+        _animator.ResetTrigger(SweepFallHash);
+        _animator.SetTrigger(SweepFallHash);
+    }
+
+    private void HandleStandUpAnimStarted()
+    {
+        _animator.ResetTrigger(StandUpHash);
+        _animator.SetTrigger(StandUpHash);
+    }
 
     private void HandleAimChanged(bool isAiming)
     => _animator.SetBool(IsAimingHash, isAiming);

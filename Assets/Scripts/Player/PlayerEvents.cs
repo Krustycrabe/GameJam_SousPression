@@ -48,4 +48,27 @@ public static class PlayerEvents
     public static void RaiseAimChanged(bool v) => OnAimChanged?.Invoke(v);
     public static void RaiseThrowChargeChanged(float v) => OnThrowChargeChanged?.Invoke(v);
     public static void RaiseThrowExecuted(Vector3 v) => OnThrowExecuted?.Invoke(v);
+
+    public static event Action OnSweepFallStarted;
+    public static event Action OnSweepFallCompleted;
+
+    public static event Action<float, float> OnTrampolineBounce;
+    public static event Action<float, bool> OnSlipChanged;
+
+    public static event Action OnSlipReset;
+    public static void RaiseSlipReset() => OnSlipReset?.Invoke();
+
+    public static void RaiseSlipChanged(float acceleration, bool isSlipping)
+    => OnSlipChanged?.Invoke(acceleration, isSlipping);
+
+
+    public static void RaiseSweepFallStarted() => OnSweepFallStarted?.Invoke();
+    public static void RaiseSweepFallCompleted() => OnSweepFallCompleted?.Invoke();
+    public static void RaiseTrampolineBounce(float vertical, float horizontal) => OnTrampolineBounce?.Invoke(vertical, horizontal);
+    public static event Action OnSweepFallAnimStarted;
+    public static event Action OnStandUpAnimStarted;
+
+    public static void RaiseSweepFallAnimStarted() => OnSweepFallAnimStarted?.Invoke();
+    public static void RaiseStandUpAnimStarted() => OnStandUpAnimStarted?.Invoke();
+
 }
