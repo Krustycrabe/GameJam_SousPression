@@ -142,12 +142,10 @@ public class PlayerMovementController : MonoBehaviour
             _currentHorizontalVelocity = Vector3.MoveTowards(
                 _currentHorizontalVelocity,
                 Vector3.zero,
-                _sweepSlideDecay * Time.deltaTime
-            );
+                _sweepSlideDecay * Time.deltaTime);
 
             _characterController.Move(
-                (_currentHorizontalVelocity + Vector3.up * _verticalVelocity) * Time.deltaTime
-            );
+                (_currentHorizontalVelocity + Vector3.up * _verticalVelocity) * Time.deltaTime);
 
             NotifyState();
             return;
@@ -191,7 +189,10 @@ public class PlayerMovementController : MonoBehaviour
         }
         else if (rotationDir.sqrMagnitude > 0.01f)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(rotationDir.normalized), 15f * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                Quaternion.LookRotation(rotationDir.normalized),
+                15f * Time.deltaTime);
         }
     }
 
@@ -216,12 +217,12 @@ public class PlayerMovementController : MonoBehaviour
     private float ComputeFallBlend()
     {
         Vector3 rayOrigin = transform.position + Vector3.up * RaycastInset;
-        float maxRayLength = _fallBlendDistance + RaycastInset;
+        float maxRayLen = _fallBlendDistance + RaycastInset;
 
-        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, maxRayLength, _groundMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, maxRayLen, _groundMask, QueryTriggerInteraction.Ignore))
         {
-            float distanceFromFeet = Mathf.Max(0f, hit.distance - RaycastInset);
-            return 1f - Mathf.Clamp01(distanceFromFeet / _fallBlendDistance);
+            float dist = Mathf.Max(0f, hit.distance - RaycastInset);
+            return 1f - Mathf.Clamp01(dist / _fallBlendDistance);
         }
 
         return 0f;

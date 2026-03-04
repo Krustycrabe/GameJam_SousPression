@@ -37,11 +37,12 @@ public class PlayerClimbController : MonoBehaviour
 
     private void OnEnable()
     {
+        Debug.LogError("[ClimbController] OnEnable — subscription OK");
         PlayerEvents.OnJumpInput += HandleJumpInput;
         PlayerEvents.OnGroundedChanged += HandleGroundedChanged;
         PlayerEvents.OnClimbAnimationEnd += HandleClimbAnimationEnd;
-        PlayerEvents.OnBriefcasePickedUp += HandleBriefcasePickedUp; // ← nouveau
-        PlayerEvents.OnBriefcaseDropped += HandleBriefcaseDropped;  // ← nouveau
+        PlayerEvents.OnBriefcasePickedUp += HandleBriefcasePickedUp;
+        PlayerEvents.OnBriefcaseDropped += HandleBriefcaseDropped;
     }
 
     private void OnDisable()
@@ -70,10 +71,21 @@ public class PlayerClimbController : MonoBehaviour
 
     private void HandleJumpInput()
     {
-        if (_isGrounded || _isClimbing || _isHoldingBriefcase) return; // ← ajout
+        Debug.LogWarning($"[Climb] JumpInput reçu — isGrounded:{_isGrounded} | isClimbing:{_isClimbing} | holdingBriefcase:{_isHoldingBriefcase}");
+
+        if (_isGrounded) { Debug.LogWarning("[Climb] BLOQUÉ : joueur au sol"); return; }
+        if (_isClimbing) { Debug.LogWarning("[Climb] BLOQUÉ : climb déjà en cours"); return; }
+        if (_isHoldingBriefcase) { Debug.LogWarning("[Climb] BLOQUÉ : mallette en main"); return; }
 
         if (TryDetectLedge(out Vector3 hangPosition, out Quaternion hangRotation))
+        {
+            Debug.LogWarning($"[Climb] Arête détectée → ClimbSequence à {hangPosition}");
             StartCoroutine(ClimbSequence(hangPosition, hangRotation));
+        }
+        else
+        {
+            Debug.LogWarning("[Climb] TryDetectLedge échoué");
+        }
     }
 
     private bool TryDetectLedge(out Vector3 hangPosition, out Quaternion hangRotation)
@@ -82,12 +94,36 @@ public class PlayerClimbController : MonoBehaviour
         hangRotation = Quaternion.identity;
 
         Vector3 chestOrigin = transform.position + Vector3.up * _detectHeight;
+        Debug.DrawRay(chestOrigin, transform.forward * _climbReach, Color.red, 2f);
 
-        if (!Physics.Raycast(chestOrigin, transform.forward, out RaycastHit wallHit, _climbReach))
+        // ── Raycast mur — ignore les colliders du joueur lui-même ───────────────
+        RaycastHit[] hits = Physics.RaycastAll(chestOrigin, transform.forward, _climbReach);
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        RaycastHit wallHit = default;
+        bool foundWall = false;
+        foreach (RaycastHit h in hits)
+        {
+            if (h.transform.IsChildOf(transform) || h.transform == transform) continue; // ignore self
+            wallHit = h;
+            foundWall = true;
+            break;
+        }
+
+        if (!foundWall)
+        {
+            Debug.LogWarning($"[Climb] Raycast mur raté — portée:{_climbReach}m depuis Y:{chestOrigin.y:F2}");
             return false;
+        }
+
+        Debug.LogWarning($"[Climb] Mur touché : '{wallHit.collider.name}' tag:'{wallHit.collider.tag}'");
 
         if (!wallHit.collider.CompareTag(_climbableTag))
+        {
+            Debug.LogWarning($"[Climb] Tag incorrect — attendu:'{_climbableTag}' reçu:'{wallHit.collider.tag}'");
             return false;
+        }
+        // ── Suite inchangée ─────────────────────────────────────────────────────
 
         Vector3 aboveOrigin = new Vector3(
             wallHit.point.x - wallHit.normal.x * 0.1f,
@@ -95,15 +131,24 @@ public class PlayerClimbController : MonoBehaviour
             wallHit.point.z - wallHit.normal.z * 0.1f
         );
 
+        Debug.DrawRay(aboveOrigin, Vector3.down * (_maxLedgeHeight + 1f), Color.blue, 2f);
+
         if (!Physics.Raycast(aboveOrigin, Vector3.down, out RaycastHit ledgeHit, _maxLedgeHeight + 1f))
+        {
+            Debug.LogWarning("[Climb] Raycast arête (vers le bas) raté");
             return false;
+        }
 
         float ledgeLocalY = ledgeHit.point.y - transform.position.y;
+        Debug.LogWarning($"[Climb] Hauteur arête : {ledgeLocalY:F2}m (min:{_minLedgeHeight} max:{_maxLedgeHeight})");
+
         if (ledgeLocalY < _minLedgeHeight || ledgeLocalY > _maxLedgeHeight)
+        {
+            Debug.LogWarning("[Climb] Hauteur hors plage !");
             return false;
+        }
 
         Vector3 wallNormal = wallHit.normal;
-
         hangRotation = Quaternion.LookRotation(-wallNormal);
         hangPosition = new Vector3(
             wallHit.point.x + wallNormal.x * _wallOffset,
@@ -113,6 +158,8 @@ public class PlayerClimbController : MonoBehaviour
 
         return true;
     }
+
+
 
     private IEnumerator ClimbSequence(Vector3 hangPosition, Quaternion hangRotation)
     {
