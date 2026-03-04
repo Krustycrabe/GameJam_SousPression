@@ -1,67 +1,56 @@
 using UnityEngine;
 
-/// <summary>
-/// Zone de son sphérique avec fade out configurable.
-/// Plein volume dans _zoneRadius, silence à _zoneRadius + _fadeDistance.
-/// </summary>
 [RequireComponent(typeof(AudioSource))]
-[RequireComponent(typeof(SphereCollider))]
 public class SoundZone : MonoBehaviour
 {
-    [Header("Zone")]
-    [SerializeField] private float _zoneRadius = 10f;
+    [SerializeField] private AudioClip _clip;
+    [SerializeField] [Range(0f, 1f)] private float _volume = 1f;
     [SerializeField] private float _fadeDistance = 3f;
 
-    [Header("Audio")]
-    [SerializeField] [Range(0f, 1f)] private float _masterVolume = 1f;
-
     private AudioSource _audioSource;
-    private SphereCollider _sphereCollider;
     private Transform _playerTransform;
-
-    private void Awake()
-    {
-        _audioSource = GetComponent<AudioSource>();
-        _audioSource.spatialBlend = 0f;
-        _audioSource.loop = true;
-        _audioSource.volume = 0f;
-        _audioSource.Play();
-
-        _sphereCollider = GetComponent<SphereCollider>();
-        _sphereCollider.isTrigger = true;
-        _sphereCollider.radius = _zoneRadius + _fadeDistance;
-    }
 
     private void Start()
     {
+        _audioSource = GetComponent<AudioSource>();
+        _audioSource.clip = _clip;
+        _audioSource.spatialBlend = 0f;
+        _audioSource.loop = true;
+        _audioSource.playOnAwake = false;
+        _audioSource.volume = 0f;
+        _audioSource.Play();
+
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-            _playerTransform = player.transform;
+        if (player != null) _playerTransform = player.transform;
     }
 
     private void Update()
     {
         if (_playerTransform == null) return;
 
-        float distance = Vector3.Distance(transform.position, _playerTransform.position);
-        float targetVolume = 0f;
+        Vector3 local = transform.InverseTransformPoint(_playerTransform.position);
+        Vector3 d = new Vector3(
+            Mathf.Max(Mathf.Abs(local.x) - 0.5f, 0f),
+            Mathf.Max(Mathf.Abs(local.y) - 0.5f, 0f),
+            Mathf.Max(Mathf.Abs(local.z) - 0.5f, 0f)
+        );
 
-        if (distance <= _zoneRadius)
-            targetVolume = 1f;
-        else if (distance <= _zoneRadius + _fadeDistance)
-            targetVolume = Mathf.InverseLerp(_zoneRadius + _fadeDistance, _zoneRadius, distance);
-
-        _audioSource.volume = targetVolume * _masterVolume;
+        _audioSource.volume = Mathf.InverseLerp(_fadeDistance, 0f, d.magnitude) * _volume;
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
-        // Zone plein volume (vert)
-        Gizmos.color = new Color(0f, 1f, 0f, 0.2f);
-        Gizmos.DrawSphere(transform.position, _zoneRadius);
+        Gizmos.matrix = transform.localToWorldMatrix;
 
-        // Zone de fade (jaune)
-        Gizmos.color = new Color(1f, 1f, 0f, 0.1f);
-        Gizmos.DrawSphere(transform.position, _zoneRadius + _fadeDistance);
+        Gizmos.color = new Color(0f, 1f, 0f, 0.15f);
+        Gizmos.DrawCube(Vector3.zero, Vector3.one);
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
+
+        float fx = _fadeDistance / transform.lossyScale.x;
+        float fy = _fadeDistance / transform.lossyScale.y;
+        float fz = _fadeDistance / transform.lossyScale.z;
+        Gizmos.color = new Color(1f, 1f, 0f, 0.6f);
+        Gizmos.DrawWireCube(Vector3.zero, Vector3.one + new Vector3(fx, fy, fz) * 2f);
     }
 }
