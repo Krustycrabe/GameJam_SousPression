@@ -16,25 +16,41 @@ public class TrampolineZone : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag(_playerTag)) return;
-        _playerInZone = true;
-        Launch();
+        // Player
+        if (other.CompareTag(_playerTag))
+        {
+            _playerInZone = true;
+            LaunchPlayer();
+            return;
+        }
+
+        // NPC — nécessite un Rigidbody kinematic sur le root du NPC
+        NPCController npc = other.GetComponentInParent<NPCController>();
+        if (npc != null)
+        {
+            npc.OnTrampolineHit(_verticalForce);
+            return;
+        }
+
+        // Malette en vol libre
+        BriefcaseItem briefcase = other.GetComponentInParent<BriefcaseItem>();
+        if (briefcase != null && !briefcase.IsHeld)
+        {
+            Rigidbody rb = other.GetComponentInParent<Rigidbody>();
+            if (rb != null)
+                rb.AddForce(Vector3.up * _verticalForce, ForceMode.Impulse);
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!other.CompareTag(_playerTag)) return;
-        _playerInZone = false;
+        if (other.CompareTag(_playerTag)) _playerInZone = false;
     }
 
     private void HandleGroundedChanged(bool isGrounded)
     {
-        if (isGrounded && _playerInZone) Launch();
+        if (isGrounded && _playerInZone) LaunchPlayer();
     }
 
-    private void Launch()
-    {
-        // La direction horizontale est calculée dans PlayerMovementController via _moveInput
-        PlayerEvents.RaiseTrampolineBounce(_verticalForce, _horizontalForce);
-    }
+    private void LaunchPlayer() => PlayerEvents.RaiseTrampolineBounce(_verticalForce, _horizontalForce);
 }

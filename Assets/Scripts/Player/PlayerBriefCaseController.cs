@@ -1,14 +1,14 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 /// <summary>
-/// Gère le ramassage, le lâcher et le handoff du lancer.
-/// Référence centrale à la BriefcaseItem.
+/// GÃ¨re le ramassage, le lÃ¢cher et le handoff du lancer.
+/// RÃ©fÃ©rence centrale Ã  la BriefcaseItem.
 /// </summary>
 public class PlayerBriefCaseController : MonoBehaviour
 {
-    [Header("Références")]
+    [Header("RÃ©fÃ©rences")]
     [SerializeField] private Transform _rightHandBone;
-    [SerializeField] private BriefcaseItem _initialBriefcase;  // drag la malette de la scène
+    [SerializeField] private BriefcaseItem _initialBriefcase;  // drag la malette de la scÃ¨ne
     [SerializeField] private float _pickupRange = 2f;
 
     private BriefcaseItem _briefcase;
@@ -52,7 +52,9 @@ public class PlayerBriefCaseController : MonoBehaviour
 
         foreach (Collider col in nearby)
         {
-            if (!col.TryGetComponent<BriefcaseItem>(out var item) || item.IsHeld) continue;
+            // GetComponentInParent remonte la hiÃ©rarchie : malette â†’ BriefCaseItem âœ“
+            BriefcaseItem item = col.GetComponentInParent<BriefcaseItem>();
+            if (item == null || item.IsHeld) continue;
 
             float dist = Vector3.Distance(transform.position, col.transform.position);
             if (dist < closestDist) { closestDist = dist; closest = item; }
