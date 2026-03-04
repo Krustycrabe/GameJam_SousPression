@@ -85,9 +85,6 @@ PrefabInstance:
       addedObject: {fileID: 3009734622033176435}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7523738696766057037}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 6436721867574904040}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
       insertIndex: -1
@@ -690,22 +687,8 @@ MonoBehaviour:
   _chaseSpeed: 4
   _pushDistance: 1.5
   _pushCooldown: 3
+  _gravityScale: 2
   _playerTag: Player
---- !u!114 &7523738696766057037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1783285318121713697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 595a57feff5a1f547adda75d950809f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCPatrolBehaviour
-  _waypoints: []
-  _waypointTolerance: 0.5
-  _patrolSpeed: 3
 --- !u!136 &6436721867574904040
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -751,10 +734,10 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!1 &3255225871815534502 stripped
 GameObject:

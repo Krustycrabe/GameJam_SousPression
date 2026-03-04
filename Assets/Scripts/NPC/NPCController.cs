@@ -23,20 +23,25 @@ public class NPCController : MonoBehaviour
     [SerializeField] private string _playerTag = "Player";
 
     private const float GravityConstant = 9.81f;
+    private const float ChaseUpdateInterval = 0.2f;
+    private const float ChaseRotationSpeed = 10f;
 
     private State _state = State.Behaviour;
     private State _stateBeforeAirborne = State.Behaviour;
     private NavMeshAgent _agent;
+    private Rigidbody _rigidbody;
     private NPCAnimationController _animController;
     private NPCRagdollController _ragdollController;
     private INPCBehaviour _behaviour;
     private Transform _playerTransform;
     private float _defaultSpeed;
     private float _defaultBaseOffset;
+    private float _lastChaseUpdateTime;
+    private bool _pushInProgress;
 
-    // Gestion verticale manuelle — sans Rigidbody ni désactivation de l'agent
-    private float _verticalVelocity = 0f;
-    private float _airborneHeight = 0f;
+    // Gestion verticale manuelle via baseOffset — NavMeshAgent toujours actif
+    private float _verticalVelocity;
+    private float _airborneHeight;
 
     public State CurrentState => _state;
     public NavMeshAgent Agent => _agent;
@@ -45,17 +50,29 @@ public class NPCController : MonoBehaviour
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _rigidbody = GetComponent<Rigidbody>();
         _animController = GetComponent<NPCAnimationController>();
         _ragdollController = GetComponent<NPCRagdollController>();
         _behaviour = GetComponent<INPCBehaviour>();
         _defaultSpeed = _agent.speed;
         _defaultBaseOffset = _agent.baseOffset;
+
+        // Force le Rigidbody en kinematic — le NavMeshAgent gère tout le mouvement
+        if (_rigidbody != null)
+        {
+            _rigidbody.isKinematic = true;
+            _rigidbody.useGravity = false;
+            _rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+        }
     }
 
     private void Start()
     {
         GameObject player = GameObject.FindGameObjectWithTag(_playerTag);
-        if (player) _playerTransform = player.transform;
+        if (player != null)
+            _playerTransform = player.transform;
+        else
+            Debug.LogWarning($"[NPCController] Aucun GameObject avec le tag '{_playerTag}' trouvé.", this);
 
         _behaviour?.OnEnter(this);
     }
@@ -66,7 +83,6 @@ public class NPCController : MonoBehaviour
 
         switch (_state)
         {
-            // Le patrol tick pendant le vol — l'agent est toujours actif
             case State.Behaviour:
             case State.Airborne:
                 _behaviour?.OnTick();
@@ -79,10 +95,8 @@ public class NPCController : MonoBehaviour
         UpdateAnimation();
     }
 
-    /// <summary>
-    /// Gère la gravité et la hauteur verticale via baseOffset.
-    /// Le NavMeshAgent reste actif — la patrol continue pendant le vol.
-    /// </summary>
+    // ── Vertical (trampoline via baseOffset) ────────────────────────────────
+
     private void UpdateVertical()
     {
         if (_airborneHeight <= 0f && _verticalVelocity <= 0f) return;
@@ -92,7 +106,6 @@ public class NPCController : MonoBehaviour
 
         if (_airborneHeight <= 0f)
         {
-            // Atterrissage
             _airborneHeight = 0f;
             _verticalVelocity = 0f;
             _agent.baseOffset = _defaultBaseOffset;
@@ -110,39 +123,39 @@ public class NPCController : MonoBehaviour
         _agent.baseOffset = _defaultBaseOffset + _airborneHeight;
     }
 
-    /// <summary>Point d'entrée pour tout impact externe (malette, etc.).</summary>
+    // ── Impacts externes ─────────────────────────────────────────────────────
+
+    /// <summary>Impact de malette — déclenche le ragdoll.</summary>
     public void OnHit(Vector3 force)
     {
         if (_state is State.KnockedDown or State.GettingUp) return;
 
-        // Annule un saut en cours avant le ragdoll
-        _airborneHeight = 0f;
-        _verticalVelocity = 0f;
-        _agent.baseOffset = _defaultBaseOffset;
-
+        ResetVertical();
+        StopAllCoroutines();
+        _pushInProgress = false;
         StartCoroutine(KnockDownSequence(force));
     }
 
-    /// <summary>Lance le NPC en l'air — NavMeshAgent actif, patrol ininterrompue.</summary>
+    /// <summary>Trampoline — saut via baseOffset, pas de ragdoll.</summary>
     public void OnTrampolineHit(float verticalForce)
     {
         if (_state is State.KnockedDown or State.GettingUp) return;
 
-        // Mémorise l'état précédent uniquement si pas déjà en vol
         if (_state != State.Airborne)
             _stateBeforeAirborne = _state;
 
         _state = State.Airborne;
-        _verticalVelocity = verticalForce; // vitesse initiale en m/s
+        _verticalVelocity = verticalForce;
         _animController.SetGrounded(false);
     }
+
+    // ── Séquences ────────────────────────────────────────────────────────────
 
     private IEnumerator KnockDownSequence(Vector3 force)
     {
         _state = State.KnockedDown;
         _behaviour?.OnExit();
-
-        _agent.enabled = false;
+        SetAgentActive(false);
         _ragdollController.EnableRagdoll(force);
 
         yield return new WaitForSeconds(_knockDownDuration);
@@ -150,33 +163,36 @@ public class NPCController : MonoBehaviour
         _ragdollController.DisableRagdoll();
         _state = State.GettingUp;
         _animController.TriggerGetUp();
-        _agent.enabled = true;
+        SetAgentActive(true);
 
         yield return new WaitForSeconds(_getUpDuration);
 
-        _state = State.Chasing;
-        _agent.speed = _chaseSpeed;
-    }
-
-    private void UpdateChase()
-    {
-        if (_playerTransform == null) return;
-
-        if (Vector3.Distance(transform.position, _playerTransform.position) <= _pushDistance)
-            StartCoroutine(PushSequence());
+        // Passe en chase uniquement si le joueur est connu
+        if (_playerTransform != null)
+        {
+            EnterChaseMode();
+        }
         else
-            _agent.SetDestination(_playerTransform.position);
+        {
+            EnterBehaviourMode();
+        }
     }
 
     private IEnumerator PushSequence()
     {
+        _pushInProgress = true;
         _state = State.Pushing;
         _agent.ResetPath();
+        _agent.updateRotation = true;
 
-        Vector3 dir = (_playerTransform.position - transform.position).normalized;
-        dir.y = 0f;
-        if (dir != Vector3.zero)
-            transform.rotation = Quaternion.LookRotation(dir);
+        // Oriente instantanément vers le joueur
+        if (_playerTransform != null)
+        {
+            Vector3 dir = (_playerTransform.position - transform.position);
+            dir.y = 0f;
+            if (dir.sqrMagnitude > 0.01f)
+                transform.rotation = Quaternion.LookRotation(dir.normalized);
+        }
 
         _animController.TriggerPush();
         yield return new WaitForSeconds(0.3f);
@@ -185,10 +201,70 @@ public class NPCController : MonoBehaviour
 
         yield return new WaitForSeconds(_pushCooldown);
 
+        _pushInProgress = false;
+        EnterBehaviourMode();
+    }
+
+    // ── Chase ────────────────────────────────────────────────────────────────
+
+    private void UpdateChase()
+    {
+        if (_playerTransform == null || _pushInProgress) return;
+
+        // Rotation manuelle vers le joueur
+        Vector3 toPlayer = _playerTransform.position - transform.position;
+        toPlayer.y = 0f;
+        if (toPlayer.sqrMagnitude > 0.01f)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(toPlayer.normalized);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, ChaseRotationSpeed * Time.deltaTime);
+        }
+
+        float dist = Vector3.Distance(transform.position, _playerTransform.position);
+        if (dist <= _pushDistance)
+        {
+            StartCoroutine(PushSequence());
+            return;
+        }
+
+        // Throttle SetDestination pour éviter les recalculs trop fréquents
+        if (Time.time - _lastChaseUpdateTime < ChaseUpdateInterval) return;
+        _lastChaseUpdateTime = Time.time;
+        _agent.SetDestination(_playerTransform.position);
+    }
+
+    // ── Helpers d'état ───────────────────────────────────────────────────────
+
+    private void EnterChaseMode()
+    {
+        _state = State.Chasing;
+        _agent.speed = _chaseSpeed;
+        _agent.stoppingDistance = _pushDistance * 0.6f;
+        _agent.updateRotation = false; // rotation manuelle dans UpdateChase
+    }
+
+    private void EnterBehaviourMode()
+    {
         _state = State.Behaviour;
         _agent.speed = _defaultSpeed;
+        _agent.stoppingDistance = 0f;
+        _agent.updateRotation = true;
         _behaviour?.OnEnter(this);
     }
+
+    private void SetAgentActive(bool active)
+    {
+        if (_agent != null) _agent.enabled = active;
+    }
+
+    private void ResetVertical()
+    {
+        _airborneHeight = 0f;
+        _verticalVelocity = 0f;
+        if (_agent != null) _agent.baseOffset = _defaultBaseOffset;
+    }
+
+    // ── Animation ────────────────────────────────────────────────────────────
 
     private void UpdateAnimation()
     {
@@ -199,6 +275,5 @@ public class NPCController : MonoBehaviour
             : 0f;
 
         _animController.SetSpeed(speed);
-        // SetGrounded est géré exclusivement par UpdateVertical
     }
 }

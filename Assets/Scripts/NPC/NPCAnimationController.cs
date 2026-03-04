@@ -10,6 +10,7 @@ public class NPCAnimationController : MonoBehaviour
     private static readonly int IsDancingHash = Animator.StringToHash("IsDancing");
     private static readonly int DanceIndexHash = Animator.StringToHash("DanceIndex");
     private static readonly int IsSweepingHash = Animator.StringToHash("IsSweeping");
+    private static readonly int IsSeatedHash = Animator.StringToHash("IsSeated");
 
     private Animator _animator;
 
@@ -30,11 +31,15 @@ public class NPCAnimationController : MonoBehaviour
     /// <summary>Active ou désactive l'Animator (ragdoll).</summary>
     public void SetAnimatorEnabled(bool value) => _animator.enabled = value;
 
+    public void SetSeated(bool isSeated) => _animator.SetBool(IsSeatedHash, isSeated);
+
     /// <summary>Active/désactive la danse avec un index d'animation configurable.</summary>
-    public void SetDancing(bool isDancing, int index = 0)
+    public void SetDancing(bool isDancing, int danceIndex = 0, int danceCount = 6)
     {
         _animator.SetBool(IsDancingHash, isDancing);
-        _animator.SetInteger(DanceIndexHash, index);
+
+        float blendValue = danceCount > 1 ? (float)danceIndex / (danceCount - 1) : 0f;
+        _animator.SetFloat(DanceIndexHash, blendValue);
     }
 
     /// <summary>Active/désactive l'animation de balayage.</summary>
