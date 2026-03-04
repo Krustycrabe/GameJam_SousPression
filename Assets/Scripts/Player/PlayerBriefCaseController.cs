@@ -13,6 +13,7 @@ public class PlayerBriefCaseController : MonoBehaviour
 
     private BriefcaseItem _briefcase;
     private bool _isHolding;
+    public bool IsHolding => _isHolding;
 
     private void Start()
     {
@@ -30,14 +31,14 @@ public class PlayerBriefCaseController : MonoBehaviour
     {
         PlayerEvents.OnPickupInput += HandlePickupInput;
         PlayerEvents.OnThrowExecuted += HandleThrowExecuted;
-        PlayerEvents.OnSweepFallStarted += HandleSweepFallStarted; // ← nouveau
+        PlayerEvents.OnSweepFallStarted += HandleSweepFallStarted;
     }
 
     private void OnDisable()
     {
         PlayerEvents.OnPickupInput -= HandlePickupInput;
         PlayerEvents.OnThrowExecuted -= HandleThrowExecuted;
-        PlayerEvents.OnSweepFallStarted -= HandleSweepFallStarted; // ← nouveau
+        PlayerEvents.OnSweepFallStarted -= HandleSweepFallStarted;
     }
 
     private void HandleSweepFallStarted()
