@@ -7,6 +7,11 @@ public class TrampolineZone : MonoBehaviour
     [SerializeField] private float _horizontalForce = 6f;
     [SerializeField] private string _playerTag = "Player";
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private AudioClip[] _bounceClips;
+    [SerializeField] [Range(0f, 1f)] private float _bounceVolume = 1f;
+
     private bool _playerInZone;
 
     private void Awake() => GetComponent<Collider>().isTrigger = true;
@@ -24,7 +29,7 @@ public class TrampolineZone : MonoBehaviour
             return;
         }
 
-        // NPC — nécessite un Rigidbody kinematic sur le root du NPC
+        // NPC â€” nÃ©cessite un Rigidbody kinematic sur le root du NPC
         NPCController npc = other.GetComponentInParent<NPCController>();
         if (npc != null)
         {
@@ -52,5 +57,17 @@ public class TrampolineZone : MonoBehaviour
         if (isGrounded && _playerInZone) LaunchPlayer();
     }
 
-    private void LaunchPlayer() => PlayerEvents.RaiseTrampolineBounce(_verticalForce, _horizontalForce);
+    private void LaunchPlayer()
+    {
+        PlayerEvents.RaiseTrampolineBounce(_verticalForce, _horizontalForce);
+        PlayRandomBounceSound();
+    }
+
+    private void PlayRandomBounceSound()
+    {
+        if (_audioSource == null || _bounceClips == null || _bounceClips.Length == 0) return;
+
+        AudioClip clip = _bounceClips[Random.Range(0, _bounceClips.Length)];
+        _audioSource.PlayOneShot(clip, _bounceVolume);
+    }
 }
