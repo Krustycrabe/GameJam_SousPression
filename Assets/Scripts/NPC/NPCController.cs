@@ -9,6 +9,12 @@ public class NPCController : MonoBehaviour
 {
     public enum State { Behaviour, KnockedDown, GettingUp, Chasing, Pushing, Airborne }
 
+    private const float GravityConstant = 9.81f;
+    private const float ChaseUpdateInterval = 0.2f;
+    private const float ChaseRotationSpeed = 10f;
+    private const float HitSoundChance = 0.20f;
+    private const float PushSoundChance = 0.10f;
+
     [Header("Knockdown & Chase")]
     [SerializeField] private float _knockDownDuration = 2f;
     [SerializeField] private float _getUpDuration = 1.5f;
@@ -21,12 +27,14 @@ public class NPCController : MonoBehaviour
 
     [Header("Références")]
     [SerializeField] private string _playerTag = "Player";
-
     [SerializeField] private bool _chaseAfterRagdoll = true;
 
-    private const float GravityConstant = 9.81f;
-    private const float ChaseUpdateInterval = 0.2f;
-    private const float ChaseRotationSpeed = 10f;
+    [Header("Audio")]
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private AudioClip[] _hitClips;
+    [SerializeField] [Range(0f, 1f)] private float _hitVolume = 1f;
+    [SerializeField] private AudioClip[] _pushPlayerClips;
+    [SerializeField] [Range(0f, 1f)] private float _pushVolume = 1f;
 
     private State _state = State.Behaviour;
     private State _stateBeforeAirborne = State.Behaviour;
@@ -42,7 +50,6 @@ public class NPCController : MonoBehaviour
     private bool _pushInProgress;
     private NPCBriefcaseController _npcBriefcaseController;
 
-    // Gestion verticale manuelle via baseOffset — NavMeshAgent toujours actif
     private float _verticalVelocity;
     private float _airborneHeight;
 
@@ -61,7 +68,6 @@ public class NPCController : MonoBehaviour
         _defaultBaseOffset = _agent.baseOffset;
         _npcBriefcaseController = GetComponent<NPCBriefcaseController>();
 
-        // Force le Rigidbody en kinematic — le NavMeshAgent gère tout le mouvement
         if (_rigidbody != null)
         {
             _rigidbody.isKinematic = true;
@@ -101,8 +107,6 @@ public class NPCController : MonoBehaviour
 
     // ── Vertical (trampoline via baseOffset) ────────────────────────────────
 
-
-
     private void UpdateVertical()
     {
         if (_airborneHeight <= 0f && _verticalVelocity <= 0f) return;
@@ -131,13 +135,15 @@ public class NPCController : MonoBehaviour
 
     // ── Impacts externes ─────────────────────────────────────────────────────
 
-    /// <summary>Impact de malette — déclenche le ragdoll.</summary>
+    /// <summary>Impact de malette ou poussée — déclenche le ragdoll.</summary>
     public void OnHit(Vector3 force)
     {
         if (_state is State.KnockedDown or State.GettingUp) return;
 
-        // Lâche la malette instantanément si le NPC en portait une
         _npcBriefcaseController?.Drop();
+
+        if (Random.value <= HitSoundChance)
+            PlayRandom(_hitClips, _hitVolume);
 
         ResetVertical();
         StopAllCoroutines();
@@ -176,13 +182,11 @@ public class NPCController : MonoBehaviour
 
         yield return new WaitForSeconds(_getUpDuration);
 
-        // Retourne au behaviour ou passe en chase selon la config
         if (_chaseAfterRagdoll && _playerTransform != null)
             EnterChaseMode();
         else
             EnterBehaviourMode();
     }
-
 
     private IEnumerator PushSequence()
     {
@@ -191,7 +195,6 @@ public class NPCController : MonoBehaviour
         _agent.ResetPath();
         _agent.updateRotation = true;
 
-        // Oriente instantanément vers le joueur
         if (_playerTransform != null)
         {
             Vector3 dir = (_playerTransform.position - transform.position);
@@ -202,6 +205,9 @@ public class NPCController : MonoBehaviour
 
         _animController.TriggerPush();
         yield return new WaitForSeconds(0.3f);
+
+        if (Random.value <= PushSoundChance)
+            PlayRandom(_pushPlayerClips, _pushVolume);
 
         PlayerEvents.RaiseSweepFallStarted();
 
@@ -217,7 +223,6 @@ public class NPCController : MonoBehaviour
     {
         if (_playerTransform == null || _pushInProgress) return;
 
-        // Rotation manuelle vers le joueur
         Vector3 toPlayer = _playerTransform.position - transform.position;
         toPlayer.y = 0f;
         if (toPlayer.sqrMagnitude > 0.01f)
@@ -233,7 +238,6 @@ public class NPCController : MonoBehaviour
             return;
         }
 
-        // Throttle SetDestination pour éviter les recalculs trop fréquents
         if (Time.time - _lastChaseUpdateTime < ChaseUpdateInterval) return;
         _lastChaseUpdateTime = Time.time;
         _agent.SetDestination(_playerTransform.position);
@@ -246,7 +250,7 @@ public class NPCController : MonoBehaviour
         _state = State.Chasing;
         _agent.speed = _chaseSpeed;
         _agent.stoppingDistance = _pushDistance * 0.6f;
-        _agent.updateRotation = false; // rotation manuelle dans UpdateChase
+        _agent.updateRotation = false;
     }
 
     private void EnterBehaviourMode()
@@ -283,5 +287,11 @@ public class NPCController : MonoBehaviour
         _animController.SetSpeed(speed);
     }
 
+    // ── Audio ────────────────────────────────────────────────────────────────
 
+    private void PlayRandom(AudioClip[] clips, float volume)
+    {
+        if (_audioSource == null || clips == null || clips.Length == 0) return;
+        _audioSource.PlayOneShot(clips[Random.Range(0, clips.Length)], volume);
+    }
 }
