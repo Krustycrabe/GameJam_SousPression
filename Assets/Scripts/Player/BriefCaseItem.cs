@@ -31,11 +31,14 @@ public class BriefcaseItem : MonoBehaviour
 
     private Vector3 _rootInitialLocalPosition;
     private Quaternion _rootInitialLocalRotation;
+    private Vector3 _rootInitialLocalScale;
 
     private Vector3 _meshInitialLocalPosition;
     private Quaternion _meshInitialLocalRotation;
 
     private bool _hasLanded;
+
+
 
     public bool IsHeld { get; private set; }
 
@@ -58,6 +61,10 @@ public class BriefcaseItem : MonoBehaviour
         _collider.enabled = false;
         IsHeld = true;
 
+        _rootInitialLocalPosition = transform.localPosition;
+        _rootInitialLocalRotation = transform.localRotation;
+        _rootInitialLocalScale = transform.localScale;
+
         ConfigureSpatialAudio();
     }
 
@@ -71,8 +78,9 @@ public class BriefcaseItem : MonoBehaviour
         _collider.enabled = false;
 
         transform.SetParent(handBone, worldPositionStays: false);
+        transform.localScale = _rootInitialLocalScale;                              // ← ajoute cette ligne
         transform.SetLocalPositionAndRotation(_rootInitialLocalPosition, _rootInitialLocalRotation);
-        _meshTransform.SetLocalPositionAndRotation(_meshInitialLocalPosition, _meshInitialLocalRotation);
+
 
         PlaySound(_pickupClip, _pickupVolume);
     }
