@@ -28,6 +28,9 @@ public static class PlayerEvents
     public static event Action<float> OnThrowChargeChanged;
     public static event Action<Vector3> OnThrowExecuted;
 
+    public static event Action OnPlayerPushStarted;
+    public static event Action OnPlayerPushHit;
+
     public static void RaiseMoveInput(Vector2 d) => OnMoveInput?.Invoke(d);
     public static void RaiseLookInput(Vector2 d) => OnLookInput?.Invoke(d);
     public static void RaiseJumpInput() => OnJumpInput?.Invoke();
@@ -48,6 +51,9 @@ public static class PlayerEvents
     public static void RaiseAimChanged(bool v) => OnAimChanged?.Invoke(v);
     public static void RaiseThrowChargeChanged(float v) => OnThrowChargeChanged?.Invoke(v);
     public static void RaiseThrowExecuted(Vector3 v) => OnThrowExecuted?.Invoke(v);
+
+    public static void RaisePlayerPushStarted() => OnPlayerPushStarted?.Invoke();
+    public static void RaisePlayerPushHit() => OnPlayerPushHit?.Invoke();
 
     public static event Action OnSweepFallStarted;
     public static event Action OnSweepFallCompleted;

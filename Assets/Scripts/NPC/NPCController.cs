@@ -38,6 +38,7 @@ public class NPCController : MonoBehaviour
     private float _defaultBaseOffset;
     private float _lastChaseUpdateTime;
     private bool _pushInProgress;
+    private NPCBriefcaseController _npcBriefcaseController;
 
     // Gestion verticale manuelle via baseOffset — NavMeshAgent toujours actif
     private float _verticalVelocity;
@@ -56,6 +57,7 @@ public class NPCController : MonoBehaviour
         _behaviour = GetComponent<INPCBehaviour>();
         _defaultSpeed = _agent.speed;
         _defaultBaseOffset = _agent.baseOffset;
+        _npcBriefcaseController = GetComponent<NPCBriefcaseController>();
 
         // Force le Rigidbody en kinematic — le NavMeshAgent gère tout le mouvement
         if (_rigidbody != null)
@@ -129,6 +131,9 @@ public class NPCController : MonoBehaviour
     public void OnHit(Vector3 force)
     {
         if (_state is State.KnockedDown or State.GettingUp) return;
+
+        // Lâche la malette instantanément si le NPC en portait une
+        _npcBriefcaseController?.Drop();
 
         ResetVertical();
         StopAllCoroutines();
