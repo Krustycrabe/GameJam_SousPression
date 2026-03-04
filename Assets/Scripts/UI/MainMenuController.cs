@@ -5,7 +5,7 @@ using UnityEngine.UI;
 /// <summary>Gère les boutons du menu principal.</summary>
 public class MainMenuController : MonoBehaviour
 {
-    private const string GameSceneName = "LevelPrincipal";
+    private const string IntroSceneName = "Intro";
 
     [Header("Boutons")]
     [SerializeField] private Button _playButton;
@@ -17,7 +17,7 @@ public class MainMenuController : MonoBehaviour
         _quitButton.onClick.AddListener(OnQuitClicked);
     }
 
-    private void OnPlayClicked() => SceneManager.LoadScene(GameSceneName);
+    private void OnPlayClicked() => SceneManager.LoadScene(IntroSceneName);
 
     private void OnQuitClicked() => Application.Quit();
 }
