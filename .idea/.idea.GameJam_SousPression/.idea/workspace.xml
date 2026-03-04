@@ -15,6 +15,8 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/PlayerAudioController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RadioAudioController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/SoundZone.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
@@ -104,7 +106,7 @@
       <updated>1772558035883</updated>
       <workItem from="1772558044169" duration="2000" />
       <workItem from="1772599725794" duration="1871000" />
-      <workItem from="1772605134588" duration="3961000" />
+      <workItem from="1772605134588" duration="5898000" />
     </task>
     <servers />
   </component>
