@@ -91,13 +91,13 @@ PrefabInstance:
       addedObject: {fileID: 3976889890409177732}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 6953111004806759840}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 3653629595801989228}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 205933659883565467}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6953111004806759840}
     - targetCorrespondingSourceObject: {fileID: 3267151512053241269, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3367365034980465587}
@@ -698,6 +698,7 @@ MonoBehaviour:
   _pushCooldown: 3
   _gravityScale: 2
   _playerTag: Player
+  _chaseAfterRagdoll: 1
 --- !u!136 &6436721867574904040
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -748,6 +749,27 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &6953111004806759840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1783285318121713697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebc83b16afca646458e16fe4e7b93387, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCRunnerBehaviour
+  _baseBehaviourComponent: {fileID: 3653629595801989228}
+  _detectionRadius: 6
+  _playerTag: Player
+  _runSpeed: 5
+  _pushDistance: 1.5
+  _pushCooldown: 2
+  _randomRunRadius: 12
+  _waypointTolerance: 0.5
+  _returnToBaseAfterRagdoll: 1
 --- !u!114 &3653629595801989228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -775,26 +797,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCBriefcaseController
   _rightHandBone: {fileID: 2630069147276713833}
   _pickupRange: 1.5
---- !u!114 &6953111004806759840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1783285318121713697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebc83b16afca646458e16fe4e7b93387, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCRunnerBehaviour
-  _detectionRadius: 6
-  _playerTag: Player
-  _runSpeed: 5
-  _pushDistance: 1.5
-  _pushCooldown: 2
-  _randomRunRadius: 12
-  _waypointTolerance: 0.5
-  _returnToWatchingAfterRagdoll: 1
 --- !u!4 &2630069147276713833 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -5764316522323783143, guid: 2def7a832f42a064abf5df7271cc943a, type: 3}

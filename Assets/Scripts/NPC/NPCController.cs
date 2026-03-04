@@ -22,6 +22,8 @@ public class NPCController : MonoBehaviour
     [Header("Références")]
     [SerializeField] private string _playerTag = "Player";
 
+    [SerializeField] private bool _chaseAfterRagdoll = true;
+
     private const float GravityConstant = 9.81f;
     private const float ChaseUpdateInterval = 0.2f;
     private const float ChaseRotationSpeed = 10f;
@@ -99,6 +101,8 @@ public class NPCController : MonoBehaviour
 
     // ── Vertical (trampoline via baseOffset) ────────────────────────────────
 
+
+
     private void UpdateVertical()
     {
         if (_airborneHeight <= 0f && _verticalVelocity <= 0f) return;
@@ -172,16 +176,13 @@ public class NPCController : MonoBehaviour
 
         yield return new WaitForSeconds(_getUpDuration);
 
-        // Passe en chase uniquement si le joueur est connu
-        if (_playerTransform != null)
-        {
+        // Retourne au behaviour ou passe en chase selon la config
+        if (_chaseAfterRagdoll && _playerTransform != null)
             EnterChaseMode();
-        }
         else
-        {
             EnterBehaviourMode();
-        }
     }
+
 
     private IEnumerator PushSequence()
     {
@@ -281,4 +282,6 @@ public class NPCController : MonoBehaviour
 
         _animController.SetSpeed(speed);
     }
+
+
 }

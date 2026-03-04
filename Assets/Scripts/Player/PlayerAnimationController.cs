@@ -12,7 +12,7 @@ public class PlayerAnimationController : MonoBehaviour
     private static readonly int ThrowHash = Animator.StringToHash("Throw");
     private static readonly int SweepFallHash = Animator.StringToHash("SweepFall");
     private static readonly int StandUpHash = Animator.StringToHash("StandUp");
-
+    private static readonly int PushHash = Animator.StringToHash("Push");
 
     private Animator _animator;
 
@@ -29,6 +29,7 @@ public class PlayerAnimationController : MonoBehaviour
         PlayerEvents.OnThrowExecuted += HandleThrowExecuted;
         PlayerEvents.OnSweepFallAnimStarted += HandleSweepFallAnimStarted;
         PlayerEvents.OnStandUpAnimStarted += HandleStandUpAnimStarted;
+        PlayerEvents.OnPlayerPushStarted += HandlePlayerPushStarted;
     }
 
     private void OnDisable()
@@ -42,11 +43,31 @@ public class PlayerAnimationController : MonoBehaviour
         PlayerEvents.OnThrowExecuted -= HandleThrowExecuted;
         PlayerEvents.OnSweepFallAnimStarted -= HandleSweepFallAnimStarted;
         PlayerEvents.OnStandUpAnimStarted -= HandleStandUpAnimStarted;
+        PlayerEvents.OnPlayerPushStarted -= HandlePlayerPushStarted;
     }
 
     private void HandleSpeedChanged(float speed) => _animator.SetFloat(SpeedHash, speed, 0.1f, Time.deltaTime);
-    private void HandleGroundedChanged(bool isGrounded) => _animator.SetBool(IsGroundedHash, isGrounded);
+    private void HandleGroundedChanged(bool grounded) => _animator.SetBool(IsGroundedHash, grounded);
     private void HandleFallBlendChanged(float blend) => _animator.SetFloat(FallBlendHash, blend, 0.15f, Time.deltaTime);
+    private void HandleAimChanged(bool isAiming) => _animator.SetBool(IsAimingHash, isAiming);
+
+    private void HandleJumpExecuted()
+    {
+        _animator.ResetTrigger(JumpHash);
+        _animator.SetTrigger(JumpHash);
+    }
+
+    private void HandleClimbStarted()
+    {
+        _animator.ResetTrigger(ClimbHash);
+        _animator.SetTrigger(ClimbHash);
+    }
+
+    private void HandleThrowExecuted(Vector3 _)
+    {
+        _animator.ResetTrigger(ThrowHash);
+        _animator.SetTrigger(ThrowHash);
+    }
 
     private void HandleSweepFallAnimStarted()
     {
@@ -60,26 +81,10 @@ public class PlayerAnimationController : MonoBehaviour
         _animator.SetTrigger(StandUpHash);
     }
 
-    private void HandleAimChanged(bool isAiming)
-    => _animator.SetBool(IsAimingHash, isAiming);
-
-    private void HandleThrowExecuted(Vector3 _)
+    /// <summary>Déclenche l'animation de poussée du joueur (sans malette).</summary>
+    private void HandlePlayerPushStarted()
     {
-        _animator.ResetTrigger(ThrowHash);
-        _animator.SetTrigger(ThrowHash);
+        _animator.ResetTrigger(PushHash);
+        _animator.SetTrigger(PushHash);
     }
-
-    private void HandleJumpExecuted()
-    {
-        _animator.ResetTrigger(JumpHash);
-        _animator.SetTrigger(JumpHash);
-    }
-
-    private void HandleClimbStarted()
-    {
-        _animator.ResetTrigger(ClimbHash);
-        _animator.SetTrigger(ClimbHash);
-        // applyRootMotion géré par PlayerClimbController
-    }
-
 }

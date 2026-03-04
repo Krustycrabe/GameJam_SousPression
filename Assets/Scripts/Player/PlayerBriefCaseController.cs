@@ -30,12 +30,19 @@ public class PlayerBriefCaseController : MonoBehaviour
     {
         PlayerEvents.OnPickupInput += HandlePickupInput;
         PlayerEvents.OnThrowExecuted += HandleThrowExecuted;
+        PlayerEvents.OnSweepFallStarted += HandleSweepFallStarted; // ← nouveau
     }
 
     private void OnDisable()
     {
         PlayerEvents.OnPickupInput -= HandlePickupInput;
         PlayerEvents.OnThrowExecuted -= HandleThrowExecuted;
+        PlayerEvents.OnSweepFallStarted -= HandleSweepFallStarted; // ← nouveau
+    }
+
+    private void HandleSweepFallStarted()
+    {
+        if (_isHolding) Drop();
     }
 
     private void HandlePickupInput()
